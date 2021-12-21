@@ -1,4 +1,3 @@
-from nltk import parse
 from models.database import Database
 from models.grammar import Parser
 import codecs
@@ -6,13 +5,18 @@ import codecs
 
 def main():
     # Loading parser
+    print('Loading grammar...')
     nlp_parser = Parser('models/grammar.fcfg')
+    print('Loading done!')
 
     # Read input files
+    print('Reading file...')
     input_file_list = [
         (f'input/queries/{index}.txt', index) for index in range(1, 7)]
+    print('Reading done!')
 
     # Dependency parsing analysis
+    print('Dependency parsing analysis...')
     result_list = []
     for file in input_file_list:
         with codecs.open(file[0], encoding='utf-8') as f:
@@ -28,6 +32,7 @@ def main():
                 out_f.write(relation + '\n')
             out_f.write('-----------------------------------------------\n')
         out_f.close()
+    print('Analysis done! See results of dependency parsing analysis in the file "output_b.txt".')
 
 
 if __name__ == '__main__':

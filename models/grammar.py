@@ -3,6 +3,7 @@ from nltk import parse
 
 
 class Token(ABC):
+    # A token contains a word and its category which defined in grammar (view file "grammar.fcfg")
     def __init__(self, word, type):
         super().__init__()
         self.word = word
@@ -19,11 +20,20 @@ class Token(ABC):
 
 
 class Parser(ABC):
+    # Parser contains some manipulation on input text, includes:
+    # 1. tokenization: split a text into list of tokens.
+    # 2. parse_tree: build a simple parse tree.
+    # 3. dependency_relation: analysis dependency parsing of a query sentence in the database. This includes some more smaller manipulation like: leftArc, rightArc, shift and reduce.
+
     def __init__(self, grammar):
+        # Parameter:
+        # 1. grammar(Grammar): defined in file "grammar.fcfg", which contains the grammar of the system.
         super().__init__()
         self.grammar = parse.load_parser(grammar, trace=0)
 
     def tokenize(self, text):
+        # Parameter:
+        # 1. text(String): a sentence in string
         tree = self.parse_tree(text)
         token_list = []
         for s in tree.subtrees(lambda t: t.height() == 2):
@@ -33,25 +43,33 @@ class Parser(ABC):
         return token_list
 
     def parse_tree(self, text):
+        # Parameter:
+        # 1. text(String): a sentence in string
         return self.grammar.parse_one(text.split())
 
     def dependency_relation(self, text):
+        # Parameter:
+        # 1. text(String): a sentence in string
         sigma = [Token('root', 'ROOT').getToken()]
         beta = self.tokenize(text)
         A = []
         while beta != []:
             relation = self.__relation(sigma[-1].type, beta[0].type)
             if relation == None:
+                # Reduce
                 sigma = sigma[:-1]
             elif relation[0] == 'shift':
+                # Shift
                 sigma.append(beta[0])
                 beta = beta[1:]
             elif relation[0] == 'left':
+                # LeftArc
                 w1 = sigma[-1].word
                 w2 = beta[0].word
                 sigma = sigma[:-1]
                 A.append(self.__rel(relation[1], w2, w1))
             else:
+                # RightArc
                 w1 = sigma[-1].word
                 w2 = beta[0].word
                 sigma.append(beta[0])
