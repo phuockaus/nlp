@@ -1,2 +1,0 @@
-tion(data)
-print(t)
