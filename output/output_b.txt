@@ -1,0 +1,64 @@
+Query 1:
+det-wh(Tàu hỏa, nào)
+nsubj(đến, Tàu hỏa)
+root(root, đến)
+pobj(đến, thành phố)
+nmod(thành phố, Huế)
+case(19:00HR, lúc)
+nmod(đến, 19:00HR)
+punct(đến, ?)
+-----------------------------------------------
+Query 2:
+nmod(tàu hỏa, B3)
+nsubj(chạy, tàu hỏa)
+nmod(Thời gian, chạy)
+case(Đà Nẵng, từ)
+pobj(chạy, Đà Nẵng)
+case(TP., đến)
+pobj(chạy, TP.)
+nmod(TP., Hồ Chí Minh)
+nsubj(là, Thời gian)
+root(root, là)
+iobj(là, mấy giờ)
+punct(là, ?)
+-----------------------------------------------
+Query 3:
+det-wh(Tàu hỏa, nào)
+nsubj(đến, Tàu hỏa)
+root(root, đến)
+pobj(đến, thành phố)
+nmod(thành phố, Hồ Chí Minh)
+punct(đến, ?)
+-----------------------------------------------
+Query 4:
+det-wh(Tàu hỏa, nào)
+nsubj(chạy, Tàu hỏa)
+root(root, chạy)
+case(Nha Trang, từ)
+pobj(chạy, Nha Trang)
+semi(chạy, ,)
+case(mấy giờ, lúc)
+nmod(chạy, mấy giờ)
+punct(chạy, ?)
+-----------------------------------------------
+Query 5:
+det-wh(Tàu hỏa, nào)
+nsubj(chạy, Tàu hỏa)
+root(root, chạy)
+case(TP., từ)
+pobj(chạy, TP.)
+nmod(TP., Hồ Chí Minh)
+case(Hà Nội, đến)
+pobj(chạy, Hà Nội)
+punct(chạy, ?)
+-----------------------------------------------
+Query 6:
+nmod(Tàu hỏa, B5)
+wh-det(chạy, có)
+nsubj(chạy, Tàu hỏa)
+root(root, chạy)
+case(Đà Nẵng, từ)
+pobj(chạy, Đà Nẵng)
+wh-det(chạy, không)
+punct(chạy, ?)
+-----------------------------------------------

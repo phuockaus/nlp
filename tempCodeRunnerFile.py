@@ -1,0 +1,2 @@
+tion(data)
+print(t)

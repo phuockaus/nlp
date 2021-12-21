@@ -1,0 +1,8 @@
+tàu hỏa, NP, 3, TAU
+nào, QDET, 3, WH
+đến, V, NP, DEN
+thành phố, NP, 3, TP
+Huế, DEST, HUE
+lúc, PREP, LUC
+19:00HR, TIME, 19:00HR
+?, PUNCT, WH_PUNCT
