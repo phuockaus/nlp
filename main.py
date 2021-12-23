@@ -35,6 +35,21 @@ def main():
         out_f.close()
     print('Analysis done! See results of dependency parsing analysis in the file "output_b.txt".')
 
+    test_data = dp_list[1][0]
+    gr = nlp_parser.grammatical_relation(test_data)
+    if gr.add_pred(test_data):
+        print(gr.pred.getLeft().getValue() + ' ' +
+              gr.pred.getRelation() + ' ' + gr.pred.getRight().getValue())
+    if gr.add_lsubj(test_data):
+        print(gr.lsubj.getLeft().getValue() + ' ' +
+              gr.lsubj.getRelation() + ' ' + gr.lsubj.getRight().getValue())
+    if gr.add_source(test_data):
+        print(gr.source.getLeft().getValue() + ' ' +
+              gr.source.getRelation() + ' (' + gr.source.getRight().getRole() + ' ' + gr.source.getRight().getVar().getValue() + ' ' + gr.source.getRight().getSem().getValue() + ')')
+    if gr.add_dest(test_data):
+        print(gr.dest.getLeft().getValue() + ' ' +
+              gr.dest.getRelation() + ' (' + gr.dest.getRight().getRole() + ' ' + gr.dest.getRight().getVar().getValue() + ' ' + gr.dest.getRight().getSem().getValue() + ')')
+
 
 if __name__ == '__main__':
     main()
