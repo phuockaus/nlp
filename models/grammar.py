@@ -1,6 +1,7 @@
 from abc import ABC
 from nltk import parse
-from .hierarchy import VAR, PRED, OBJECT
+
+from .utils import dep_relation, semm
 
 
 class Token(ABC):
@@ -90,7 +91,7 @@ class GrammaticalRelation(ABC):
     def add_pred(self, dp_list):
         root = list(filter(lambda relation: relation.getRelation()
                            == 'root', dp_list))[0]
-        sem = self.__sem(root.getToken('r').getType())
+        sem = semm(root.getToken('r').getType())
         self.pred = Pattern('PRED', sem[0], sem[1])
         return True
 
@@ -99,9 +100,9 @@ class GrammaticalRelation(ABC):
             return False
         nsubj_list = list(filter(lambda relation: relation.getRelation()
                                  == 'nsubj', dp_list))
-        main_nsubj = list(filter(lambda relation: self.__sem(relation.getToken(
+        main_nsubj = list(filter(lambda relation: semm(relation.getToken(
             'l').getType())[1].getValue() == self.pred.getRight().getValue(), nsubj_list))[0]
-        sem = self.__sem(main_nsubj.getToken('r').getType())
+        sem = semm(main_nsubj.getToken('r').getType())
         self.lsubj = Pattern('LSUBJ', self.pred.getLeft(), sem[0])
         return True
 
@@ -113,8 +114,8 @@ class GrammaticalRelation(ABC):
         if len(case_list) == 0:
             return False
         case = case_list[0]
-        sem = self.__sem(case.getToken('l').getType(),
-                         city=case.getToken('l').getWord())
+        sem = semm(case.getToken('l').getType(),
+                   city=case.getToken('l').getWord())
         self.source = Pattern(
             'FROM-LOC', self.pred.getLeft(), LogicalForm('CITY-NAME', sem[0], sem[1]))
         return True
@@ -124,9 +125,9 @@ class GrammaticalRelation(ABC):
             return False
         if self.pred.getRight().getValue() == 'ARRIVE':
             pobj = list(filter(lambda relation: relation.getRelation()
-                               == 'pobj', dp_list))[0]
-            sem = self.__sem(pobj.getToken('r').getType(),
-                             city=pobj.getToken('r').getWord())
+                               == 'dobj', dp_list))[0]
+            sem = semm(pobj.getToken('r').getType(),
+                       city=pobj.getToken('r').getWord())
             self.dest = Pattern(
                 'TO-LOC', self.pred.getLeft(), LogicalForm('CITY-NAME', sem[0], sem[1]))
         else:
@@ -135,42 +136,47 @@ class GrammaticalRelation(ABC):
             if len(case_list) == 0:
                 return False
             case = case_list[0]
-            sem = self.__sem(case.getToken('l').getType(),
-                             city=case.getToken('l').getWord())
+            sem = semm(case.getToken('l').getType(),
+                       city=case.getToken('l').getWord())
             self.dest = Pattern(
                 'TO-LOC', self.pred.getLeft(), LogicalForm('CITY-NAME', sem[0], sem[1]))
-            return True
+        return True
+
+    def add_time(self, dp_list):
+        if not self.pred or not self.lsubj:
+            return False
+        case_list = list(filter(lambda relation: relation.getRelation(
+        ) == 'case' and relation.getToken('r').getType() == 'AT', dp_list))
+        if len(case_list) == 0:
+            return False
+        case = case_list[0]
+        sem = semm(case.getToken('l').getType(),
+                   time=case.getToken('l').getWord())
+        self.time = Pattern(
+            'AT-TIME', self.pred.getLeft(), LogicalForm('TIME', sem[0], sem[1]))
+        return True
 
     def add_query(self, dp_list):
-        r = list(filter(lambda relation: relation.getRelation()
-                        == 'det-wh', dp_list))[0]
-        sem = self.__sem(r.getToken('l').getType())
-        self.query = Pattern('WH-TRAIN', sem[0], sem[1]) if sem[1].getObject(
-        ) == 'TRAIN' else Pattern('WH-TIME', sem[0], sem[1])
-        self.variable.append(sem[0])
+        wh_list = list(filter(lambda relation: relation.getRelation()
+                              == 'det-wh', dp_list))
+        if len(wh_list) != 0:
+            # Wh question
+            wh = wh_list[0]
+            if wh.getToken('l').getType() == 'TRAIN-N':
+                sem = semm(wh.getToken('l').getType())
+                self.query = Pattern('WH-TRAIN', sem[0], sem[1])
+            elif wh.getToken('r').getType() == 'TIME-QUERY':
+                sem = semm(wh.getToken('r').getType())
+                self.query = Pattern('WH-TIME', sem[0], sem[1])
+            else:
+                return False
+        else:
+            pass
 
-    def add_time(self, action_v, time):
-        self.time = Pattern('AT-TIME', action_v, time)
+        return True
 
     def get(self):
         return self
-
-    @staticmethod
-    def __sem(type, city=None):
-        variant_city = {
-            'Huế': (VAR('h1'), OBJECT('HUE')),
-            'Đà Nẵng': (VAR('d1'), OBJECT('DANANG')),
-            'Hồ Chí Minh': (VAR('h2'), OBJECT('HCM'))
-        }
-        sematic = {
-            'TRAIN-N': (VAR('t1'), OBJECT('TRAIN')),
-            'TIME-N': (VAR('t2'), OBJECT('TIME')),
-            'ARRIVE-V': (VAR('a1'), PRED('ARRIVE')),
-            'TIME-V': (VAR('i1'), PRED('IS')),
-            'RUN-V': (VAR('r1'), PRED('RUN')),
-            'CITY-NAME': variant_city.get(city, None),
-        }
-        return sematic.get(type, None)
 
 
 class Parser(ABC):
@@ -208,7 +214,7 @@ class Parser(ABC):
         beta = self.tokenize(text)
         A = []
         while beta != []:
-            relation = self.__dep_relation(
+            relation = dep_relation(
                 sigma[-1].getType(), beta[0].getType())
             if relation == None:
                 # Reduce
@@ -236,57 +242,3 @@ class Parser(ABC):
         gr = GrammaticalRelation()
         gr.add_pred(dp_list)
         return gr
-
-    @staticmethod
-    def __dep_relation(t1, t2):
-        relation = {
-            # shift
-            ('ROOT', 'TRAIN-N'): ('shift', None),
-            ('ROOT', 'TRAIN-NAME'): ('shift', None),
-            ('ROOT', 'TIME-N'): ('shift', None),
-            ('RUN-V', 'AT'): ('shift', None),
-            ('ARRIVE-V', 'AT'): ('shift', None),
-            ('RUN-V', 'FROM'): ('shift', None),
-            ('RUN-V', 'TO'): ('shift', None),
-            ('TIME-N', 'TRAIN-N'): ('shift', None),
-            ('TRAIN-NAME', 'YN-BEGIN'): ('shift', None),
-            ('ARRIVE-V', 'CITY-N'): ('shift', None),
-            ('FROM', 'CITY-N'): ('shift', None),
-            ('TO', 'CITY-N'): ('shift', None),
-            ('TIME-N', 'TRAIN-NAME'): ('shift', None),
-            # ('RUN-V', 'CITY-N'): ('shift', None),
-
-            # rightArc
-
-            ('TRAIN-N', 'WHICH-QUERY'): ('right', 'det-wh'),
-            ('ROOT', 'ARRIVE-V'): ('right', 'root'),
-            ('ROOT', 'RUN-V'): ('right', 'root'),
-            ('ROOT', 'TIME-V'): ('right', 'root'),
-            ('ARRIVE-V', 'CITY-NAME'): ('right', 'pobj'),
-            ('RUN-V', 'CITY-NAME'): ('right', 'pobj'),
-            ('ARRIVE-V', 'TIME'): ('right', 'nmod'),
-            ('RUN-V', 'TIME'): ('right', 'nmod'),
-            ('RUN-V', 'SEMI-PUNCT'): ('right', 'semi'),
-            ('RUN-V', 'TIME-QUERY'): ('right', 'nmod'),
-            ('ARRIVE-V', 'QUESTION-PUNCT'): ('right', 'punct'),
-            ('RUN-V', 'QUESTION-PUNCT'): ('right', 'punct'),
-            ('TIME-N', 'RUN-V'): ('right', 'nmod'),
-            ('TIME-V', 'TIME-QUERY'): ('right', 'det-wh'),
-            ('TIME-V', 'QUESTION-PUNCT'): ('right', 'punct'),
-            ('RUN-V', 'YN-END'): ('right', 'yn-det'),
-
-            # leftArc
-            ('TRAIN-N', 'TRAIN-NAME'): ('left', 'amod'),
-            ('CITY-N', 'CITY-NAME'): ('left', 'amod'),
-            ('TRAIN-N', 'ARRIVE-V'): ('left', 'nsubj'),
-            ('TRAIN-N', 'RUN-V'): ('left', 'nsubj'),
-            ('TRAIN-NAME', 'ARRIVE-V'): ('left', 'nsubj'),
-            ('TRAIN-NAME', 'RUN-V'): ('left', 'nsubj'),
-            ('TIME-N', 'TIME-V'): ('left', 'nsubj'),
-            ('AT', 'TIME'): ('left', 'case'),
-            ('AT', 'TIME-QUERY'): ('left', 'case'),
-            ('FROM', 'CITY-NAME'): ('left', 'case'),
-            ('TO', 'CITY-NAME'): ('left', 'case'),
-            ('YN-BEGIN', 'RUN-V'): ('left', 'yn-det'),
-        }
-        return relation.get((t1, t2), None)

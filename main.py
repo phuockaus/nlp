@@ -1,11 +1,12 @@
-from models.utils import loading_parser, read_file
+from models.utils import read_file
+from models.grammar import Parser
 import codecs
 
 
 def main():
     # Loading parser
     print('Loading grammar...')
-    nlp_parser = loading_parser('models/grammar.fcfg')
+    nlp_parser = Parser('models/grammar.fcfg')
     print('Loading done!')
 
     # Read input files
@@ -35,7 +36,7 @@ def main():
         out_f.close()
     print('Analysis done! See results of dependency parsing analysis in the file "output_b.txt".')
 
-    test_data = dp_list[1][0]
+    test_data = dp_list[5][0]
     gr = nlp_parser.grammatical_relation(test_data)
     if gr.add_pred(test_data):
         print(gr.pred.getLeft().getValue() + ' ' +
@@ -49,6 +50,12 @@ def main():
     if gr.add_dest(test_data):
         print(gr.dest.getLeft().getValue() + ' ' +
               gr.dest.getRelation() + ' (' + gr.dest.getRight().getRole() + ' ' + gr.dest.getRight().getVar().getValue() + ' ' + gr.dest.getRight().getSem().getValue() + ')')
+    if gr.add_time(test_data):
+        print(gr.time.getLeft().getValue() + ' ' +
+              gr.time.getRelation() + ' (' + gr.time.getRight().getRole() + ' ' + gr.time.getRight().getVar().getValue() + ' ' + gr.time.getRight().getSem().getValue() + ')')
+    if gr.add_query(test_data):
+        print(gr.query.getLeft().getValue() + ' ' +
+              gr.query.getRelation() + ' ' + gr.query.getRight().getValue())
 
 
 if __name__ == '__main__':
