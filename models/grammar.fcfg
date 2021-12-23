@@ -16,6 +16,9 @@ TRAIN-VP -> TRAIN-V TRAIN-FROM-SOURCE
 TRAIN-VP -> TRAIN-V TRAIN-TO-SOURCE
 TRAIN-VP -> TRAIN-VP SEMI-PUNCT TRAIN-TIME
 
+TRAIN-V -> ARRIVE-V
+TRAIN-V -> RUN-V
+
 TIME-VP -> TIME-V TIME-NP
 
 TIME-NP -> TIME-N
@@ -41,7 +44,8 @@ FROM -> 'từ'
 TO -> 'đến'
 TRAIN-N -> 'Tàu' 'hỏa' | 'tàu' 'hỏa'
 TRAIN-NAME -> 'B1' | 'B2' | 'B3' | 'B4' | 'B5' | 'B6'
-TRAIN-V -> 'đến' | 'chạy'
+RUN-V -> 'chạy'
+ARRIVE-V -> 'đến'
 WHICH-QUERY -> 'nào'
 CITY-N -> 'thành' 'phố' | 'TP.'
 CITY-NAME -> 'Huế' | 'Hồ' 'Chí' 'Minh' | 'Đà' 'Nẵng' | 'Nha' 'Trang' | 'Hà' 'Nội'

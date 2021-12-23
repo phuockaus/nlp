@@ -15,8 +15,30 @@ class Token(ABC):
     def __repr__(self):
         return self.__str__()
 
-    def getToken(self):
-        return self
+    # def getToken(self):
+    #     return self
+
+    def getWord(self):
+        return self.word
+
+    def getType(self):
+        return self.type
+
+
+class Relation(ABC):
+    def __init__(self, relation, token_l, token_r):
+        super().__init__()
+        self.relation = relation
+        self.token_l = token_l
+        self.token_r = token_r
+
+    def getRelation(self):
+        return self.relation
+
+    def getToken(self, pos='l'):
+        if pos == 'l':
+            return self.token_l
+        return self.token_r
 
 
 class Parser(ABC):
@@ -39,7 +61,7 @@ class Parser(ABC):
         for s in tree.subtrees(lambda t: t.height() == 2):
             type = str(s.label())[12: -3]
             word = ' '.join(s.leaves())
-            token_list.append(Token(word, type).getToken())
+            token_list.append(Token(word, type))
         return token_list
 
     def parse_tree(self, text):
@@ -50,11 +72,11 @@ class Parser(ABC):
     def dependency_relation(self, text):
         # Parameter:
         # 1. text(String): a sentence in string
-        sigma = [Token('root', 'ROOT').getToken()]
+        sigma = [Token('root', 'ROOT')]
         beta = self.tokenize(text)
         A = []
         while beta != []:
-            relation = self.__relation(sigma[-1].type, beta[0].type)
+            relation = self.__relation(sigma[-1].getType(), beta[0].getType())
             if relation == None:
                 # Reduce
                 sigma = sigma[:-1]
@@ -64,18 +86,21 @@ class Parser(ABC):
                 beta = beta[1:]
             elif relation[0] == 'left':
                 # LeftArc
-                w1 = sigma[-1].word
-                w2 = beta[0].word
+                w1 = sigma[-1]
+                w2 = beta[0]
                 sigma = sigma[:-1]
-                A.append(self.__rel(relation[1], w2, w1))
+                A.append(Relation(relation[1], w2, w1))
             else:
                 # RightArc
-                w1 = sigma[-1].word
-                w2 = beta[0].word
+                w1 = sigma[-1]
+                w2 = beta[0]
                 sigma.append(beta[0])
                 beta = beta[1:]
-                A.append(self.__rel(relation[1], w1, w2))
+                A.append(Relation(relation[1], w1, w2))
         return A
+
+    def grammatical_relation(self, dp_list):
+        pass
 
     @staticmethod
     def __rel(type, w1, w2):
@@ -87,38 +112,45 @@ class Parser(ABC):
             # shift
             ('ROOT', 'TRAIN-N'): ('shift', None),
             ('ROOT', 'TIME-N'): ('shift', None),
-            ('TRAIN-V', 'AT'): ('shift', None),
-            ('TRAIN-V', 'FROM'): ('shift', None),
-            ('TRAIN-V', 'TO'): ('shift', None),
+            ('RUN-V', 'AT'): ('shift', None),
+            ('ARRIVE-V', 'AT'): ('shift', None),
+            ('RUN-V', 'FROM'): ('shift', None),
+            ('RUN-V', 'TO'): ('shift', None),
             ('TIME-N', 'TRAIN-N'): ('shift', None),
             ('TRAIN-N', 'YN-BEGIN'): ('shift', None),
+            ('ARRIVE-V', 'CITY-N'): ('shift', None),
+            ('FROM', 'CITY-N'): ('shift', None),
+            ('TO', 'CITY-N'): ('shift', None),
+            # ('RUN-V', 'CITY-N'): ('shift', None),
 
             # rightArc
             ('TRAIN-N', 'TRAIN-NAME'): ('right', 'nmod'),
-            ('TRAIN-N', 'WHICH-QUERY'): ('right', 'det-wh'),
-            ('ROOT', 'TRAIN-V'): ('right', 'root'),
+            ('TRAIN-N', 'WHICH-QUERY'): ('right', 'det-wh-train'),
+            ('ROOT', 'ARRIVE-V'): ('right', 'root'),
+            ('ROOT', 'RUN-V'): ('right', 'root'),
             ('ROOT', 'TIME-V'): ('right', 'root'),
-            ('CITY-N', 'CITY-NAME'): ('right', 'nmod'),
-            ('TRAIN-V', 'CITY-N'): ('right', 'pobj'),
-            ('TRAIN-V', 'CITY-NAME'): ('right', 'pobj'),
-            ('TRAIN-V', 'TIME'): ('right', 'nmod'),
-            ('TRAIN-V', 'SEMI-PUNCT'): ('right', 'semi'),
-            ('TRAIN-V', 'TIME-QUERY'): ('right', 'nmod'),
-            ('TRAIN-V', 'QUESTION-PUNCT'): ('right', 'punct'),
-            ('TIME-N', 'TRAIN-V'): ('right', 'nmod'),
-            ('TIME-V', 'TIME-QUERY'): ('right', 'iobj'),
+            ('ARRIVE-V', 'CITY-NAME'): ('right', 'pobj'),
+            ('RUN-V', 'CITY-NAME'): ('right', 'pobj'),
+            ('ARRIVE-V', 'TIME'): ('right', 'nmod'),
+            ('RUN-V', 'TIME'): ('right', 'nmod'),
+            ('RUN-V', 'SEMI-PUNCT'): ('right', 'semi'),
+            ('RUN-V', 'TIME-QUERY'): ('right', 'nmod'),
+            ('ARRIVE-V', 'QUESTION-PUNCT'): ('right', 'punct'),
+            ('RUN-V', 'QUESTION-PUNCT'): ('right', 'punct'),
+            ('TIME-N', 'RUN-V'): ('right', 'nmod'),
+            ('TIME-V', 'TIME-QUERY'): ('right', 'det-wh-time'),
             ('TIME-V', 'QUESTION-PUNCT'): ('right', 'punct'),
-            ('TRAIN-V', 'YN-END'): ('right', 'wh-det'),
+            ('RUN-V', 'YN-END'): ('right', 'yn-det'),
 
             # leftArc
-            ('TRAIN-N', 'TRAIN-V'): ('left', 'nsubj'),
+            ('CITY-N', 'CITY-NAME'): ('left', 'nmod'),
+            ('TRAIN-N', 'ARRIVE-V'): ('left', 'nsubj'),
+            ('TRAIN-N', 'RUN-V'): ('left', 'nsubj'),
             ('TIME-N', 'TIME-V'): ('left', 'nsubj'),
             ('AT', 'TIME'): ('left', 'case'),
             ('AT', 'TIME-QUERY'): ('left', 'case'),
             ('FROM', 'CITY-NAME'): ('left', 'case'),
             ('TO', 'CITY-NAME'): ('left', 'case'),
-            ('FROM', 'CITY-N'): ('left', 'case'),
-            ('TO', 'CITY-N'): ('left', 'case'),
-            ('YN-BEGIN', 'TRAIN-V'): ('left', 'wh-det'),
+            ('YN-BEGIN', 'RUN-V'): ('left', 'yn-det'),
         }
         return relation.get((t1, t2), None)
