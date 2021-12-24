@@ -1,0 +1,43 @@
+Query 1:
+(t1 WH-TRAIN TRAIN)
+(a1 PRED ARRIVE)
+(a1 LSUBJ t1)
+(a1 TO-LOC (CITY-NAME h1 HUE))
+(a1 AT-TIME (TIME t3 19:00HR))
+-----------------------------------------------
+Query 2:
+(t2 WH-TIME TIME)
+(i1 PRED IS)
+(i1 LSUBJ t2)
+(r1 PRED RUN)
+(i1 IOBJ r1)
+(r1 LSUBJ (TRAIN-NAME b1 B3))
+(r1 FROM-LOC (CITY-NAME d1 DANANG))
+(r1 TO-LOC (CITY-NAME h2 HCM))
+-----------------------------------------------
+Query 3:
+(t1 WH-TRAIN TRAIN)
+(a1 PRED ARRIVE)
+(a1 LSUBJ t1)
+(a1 TO-LOC (CITY-NAME h2 HCM))
+-----------------------------------------------
+Query 4:
+(t1 WH-TRAIN TRAIN)
+(r1 PRED RUN)
+(r1 LSUBJ t1)
+(r1 FROM-LOC (CITY-NAME n1 NHATRANG))
+(r1 AT-TIME t2)
+-----------------------------------------------
+Query 5:
+(t1 WH-TRAIN TRAIN)
+(r1 PRED RUN)
+(r1 LSUBJ t1)
+(r1 FROM-LOC (CITY-NAME h2 HCM))
+(r1 TO-LOC (CITY-NAME h3 HANOI))
+-----------------------------------------------
+Query 6:
+(YN)
+(r1 PRED RUN)
+(r1 LSUBJ (TRAIN-NAME b1 B5))
+(r1 FROM-LOC (CITY-NAME d1 DANANG))
+-----------------------------------------------

@@ -1,4 +1,5 @@
 from .hierarchy import VAR, PRED, OBJECT
+from abc import ABC
 
 
 def read_file(folder):
@@ -59,61 +60,70 @@ def dep_relation(t1, t2):
     return relation.get((t1, t2), None)
 
 
-def semm(type, city=None, time=None):
+def semm(type, city=None, time=None, train=None):
     variant_city = {
-        'Huế': (VAR('h1'), OBJECT('HUE')),
-        'Đà Nẵng': (VAR('d1'), OBJECT('DANANG')),
-        'Hồ Chí Minh': (VAR('h2'), OBJECT('HCM'))
+        'Huế': (LogicalForm('CITY-NAME', VAR('h1'), OBJECT('HUE')), None),
+        'Đà Nẵng': (LogicalForm('CITY-NAME', VAR('d1'), OBJECT('DANANG')), None),
+        'Hồ Chí Minh': (LogicalForm('CITY-NAME', VAR('h2'), OBJECT('HCM')), None),
+        'Hà Nội': (LogicalForm('CITY-NAME', VAR('h3'), OBJECT('HANOI')), None),
+        'Nha Trang': (LogicalForm('CITY-NAME', VAR('n1'), OBJECT('NHATRANG')), None)
     }
     variant_time = {
-        '0:00HR': (VAR('t3'), OBJECT('0:00HR')),
-        '0:30HR': (VAR('t3'), OBJECT('0:30HR')),
-        '1:00HR': (VAR('t3'), OBJECT('1:00HR')),
-        '1:30HR': (VAR('t3'), OBJECT('1:30HR')),
-        '2:00HR': (VAR('t3'), OBJECT('2:00HR')),
-        '2:30HR': (VAR('t3'), OBJECT('2:30HR')),
-        '3:00HR': (VAR('t3'), OBJECT('3:00HR')),
-        '3:30HR': (VAR('t3'), OBJECT('3:30HR')),
-        '4:00HR': (VAR('t3'), OBJECT('4:00HR')),
-        '4:30HR': (VAR('t3'), OBJECT('4:30HR')),
-        '5:00HR': (VAR('t3'), OBJECT('5:00HR')),
-        '5:30HR': (VAR('t3'), OBJECT('5:30HR')),
-        '6:00HR': (VAR('t3'), OBJECT('6:00HR')),
-        '6:30HR': (VAR('t3'), OBJECT('6:30HR')),
-        '7:00HR': (VAR('t3'), OBJECT('7:00HR')),
-        '7:30HR': (VAR('t3'), OBJECT('7:30HR')),
-        '8:00HR': (VAR('t3'), OBJECT('8:00HR')),
-        '8:30HR': (VAR('t3'), OBJECT('8:30HR')),
-        '9:00HR': (VAR('t3'), OBJECT('9:00HR')),
-        '9:30HR': (VAR('t3'), OBJECT('9:30HR')),
-        '10:00HR': (VAR('t3'), OBJECT('10:00HR')),
-        '10:30HR': (VAR('t3'), OBJECT('10:30HR')),
-        '11:00HR': (VAR('t3'), OBJECT('11:00HR')),
-        '11:30HR': (VAR('t3'), OBJECT('11:30HR')),
-        '12:00HR': (VAR('t3'), OBJECT('12:00HR')),
-        '12:30HR': (VAR('t3'), OBJECT('12:30HR')),
-        '13:00HR': (VAR('t3'), OBJECT('13:00HR')),
-        '13:30HR': (VAR('t3'), OBJECT('13:30HR')),
-        '14:00HR': (VAR('t3'), OBJECT('14:00HR')),
-        '14:30HR': (VAR('t3'), OBJECT('14:30HR')),
-        '15:00HR': (VAR('t3'), OBJECT('15:00HR')),
-        '15:30HR': (VAR('t3'), OBJECT('15:30HR')),
-        '16:00HR': (VAR('t3'), OBJECT('16:00HR')),
-        '16:30HR': (VAR('t3'), OBJECT('16:30HR')),
-        '17:00HR': (VAR('t3'), OBJECT('17:00HR')),
-        '17:30HR': (VAR('t3'), OBJECT('17:30HR')),
-        '18:00HR': (VAR('t3'), OBJECT('18:00HR')),
-        '18:30HR': (VAR('t3'), OBJECT('18:30HR')),
-        '19:00HR': (VAR('t3'), OBJECT('19:00HR')),
-        '19:30HR': (VAR('t3'), OBJECT('19:30HR')),
-        '20:00HR': (VAR('t3'), OBJECT('20:00HR')),
-        '20:30HR': (VAR('t3'), OBJECT('20:30HR')),
-        '21:00HR': (VAR('t3'), OBJECT('21:00HR')),
-        '21:30HR': (VAR('t3'), OBJECT('21:30HR')),
-        '22:00HR': (VAR('t3'), OBJECT('22:00HR')),
-        '22:30HR': (VAR('t3'), OBJECT('22:30HR')),
-        '23:00HR': (VAR('t3'), OBJECT('23:00HR')),
-        '23:30HR': (VAR('t3'), OBJECT('23:30HR')),
+        '0:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('0:00HR')), None),
+        '0:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('0:30HR')), None),
+        '1:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('1:00HR')), None),
+        '1:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('1:30HR')), None),
+        '2:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('2:00HR')), None),
+        '2:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('2:30HR')), None),
+        '3:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('3:00HR')), None),
+        '3:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('3:30HR')), None),
+        '4:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('4:00HR')), None),
+        '4:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('4:30HR')), None),
+        '5:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('5:00HR')), None),
+        '5:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('5:30HR')), None),
+        '6:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('6:00HR')), None),
+        '6:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('6:30HR')), None),
+        '7:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('7:00HR')), None),
+        '7:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('7:30HR')), None),
+        '8:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('8:00HR')), None),
+        '8:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('8:30HR')), None),
+        '9:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('9:00HR')), None),
+        '9:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('9:30HR')), None),
+        '10:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('10:00HR')), None),
+        '10:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('10:30HR')), None),
+        '11:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('11:00HR')), None),
+        '11:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('11:30HR')), None),
+        '12:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('12:00HR')), None),
+        '12:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('12:30HR')), None),
+        '13:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('13:00HR')), None),
+        '13:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('13:30HR')), None),
+        '14:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('14:00HR')), None),
+        '14:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('14:30HR')), None),
+        '15:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('15:00HR')), None),
+        '15:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('15:30HR')), None),
+        '16:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('16:00HR')), None),
+        '16:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('16:30HR')), None),
+        '17:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('17:00HR')), None),
+        '17:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('17:30HR')), None),
+        '18:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('18:00HR')), None),
+        '18:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('18:30HR')), None),
+        '19:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('19:00HR')), None),
+        '19:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('19:30HR')), None),
+        '20:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('20:00HR')), None),
+        '20:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('20:30HR')), None),
+        '21:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('21:00HR')), None),
+        '21:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('21:30HR')), None),
+        '22:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('22:00HR')), None),
+        '22:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('22:30HR')), None),
+        '23:00HR': (LogicalForm('TIME', VAR('t3'), OBJECT('23:00HR')), None),
+        '23:30HR': (LogicalForm('TIME', VAR('t3'), OBJECT('23:30HR')), None),
+    }
+    variant_train = {
+        'B1': (LogicalForm('TRAIN-NAME', VAR('b1'), OBJECT('B1')), None),
+        'B2': (LogicalForm('TRAIN-NAME', VAR('b1'), OBJECT('B2')), None),
+        'B3': (LogicalForm('TRAIN-NAME', VAR('b1'), OBJECT('B3')), None),
+        'B4': (LogicalForm('TRAIN-NAME', VAR('b1'), OBJECT('B4')), None),
+        'B5': (LogicalForm('TRAIN-NAME', VAR('b1'), OBJECT('B5')), None),
     }
     sematic = {
         'TRAIN-N': (VAR('t1'), OBJECT('TRAIN')),
@@ -123,6 +133,79 @@ def semm(type, city=None, time=None):
         'RUN-V': (VAR('r1'), PRED('RUN')),
         'CITY-NAME': variant_city.get(city, None),
         'TIME': variant_time.get(time, None),
-        'TIME-QUERY': (VAR('t2'), OBJECT('TIME'))
+        'TIME-QUERY': (VAR('t2'), OBJECT('TIME')),
+        'TRAIN-NAME': variant_train.get(train, None),
     }
     return sematic.get(type, None)
+
+
+class LogicalForm(ABC):
+    def __init__(self, role, var, sem):
+        super().__init__()
+        self.role = role
+        self.var = var
+        self.sem = sem
+
+    def getRole(self):
+        return self.role
+
+    def getVar(self):
+        return self.var
+
+    def getSem(self):
+        return self.sem
+
+
+class GRPrinter(ABC):
+    def __init__(self, gr):
+        super().__init__()
+        self.gr = gr
+
+    def print_query(self):
+        for q in self.gr.query:
+            if q.getRelation() == 'YN':
+                return self.__printYN(q)
+            else:
+                return self.__printPattern(q)
+
+    def print_pred(self):
+        return self.__printPattern(self.gr.pred)
+
+    def print_lsubj(self):
+        return self.__printPattern(self.gr.lsubj)
+
+    def print_lobj(self):
+        pred = self.__printPattern(self.gr.lobj.pred)
+        nmod = self.__printPattern(self.gr.nmod)
+        lsubj = self.__printPattern(self.gr.lobj.lsubj)
+        source = self.__printPattern(self.gr.lobj.source)
+        dest = self.__printPattern(self.gr.lobj.dest)
+        return f'{pred}{nmod}{lsubj}{source}{dest}'
+
+    def print_source(self):
+        return self.__printPattern(self.gr.source)
+
+    def print_dest(self):
+        return self.__printPattern(self.gr.dest)
+
+    def print_time(self):
+        return self.__printPattern(self.gr.time)
+
+    @ staticmethod
+    def __printLF(object):
+        role = object.getRole()
+        var = object.getVar().getValue()
+        sem = object.getSem().getValue()
+        return f'({role} {var} {sem})'
+
+    @ classmethod
+    def __printPattern(cls, gr):
+        left = gr.getLeft().getValue()
+        rel = gr.getRelation()
+        right = gr.getRight().getValue() if type(
+            gr.getRight()) != LogicalForm else cls.__printLF(gr.getRight())
+        return f'({left} {rel} {right})\n'
+
+    @ staticmethod
+    def __printYN(gr):
+        return f'({gr.getRelation()})\n'

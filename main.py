@@ -1,5 +1,5 @@
-from models.utils import read_file
-from models.grammar import Parser
+from models.utils import LogicalForm, GRPrinter, read_file
+from models.grammar import GrammaticalRelation, Parser
 import codecs
 
 
@@ -36,26 +36,44 @@ def main():
         out_f.close()
     print('Analysis done! See results of dependency parsing analysis in the file "output_b.txt".')
 
-    test_data = dp_list[5][0]
-    gr = nlp_parser.grammatical_relation(test_data)
-    if gr.add_pred(test_data):
-        print(gr.pred.getLeft().getValue() + ' ' +
-              gr.pred.getRelation() + ' ' + gr.pred.getRight().getValue())
-    if gr.add_lsubj(test_data):
-        print(gr.lsubj.getLeft().getValue() + ' ' +
-              gr.lsubj.getRelation() + ' ' + gr.lsubj.getRight().getValue())
-    if gr.add_source(test_data):
-        print(gr.source.getLeft().getValue() + ' ' +
-              gr.source.getRelation() + ' (' + gr.source.getRight().getRole() + ' ' + gr.source.getRight().getVar().getValue() + ' ' + gr.source.getRight().getSem().getValue() + ')')
-    if gr.add_dest(test_data):
-        print(gr.dest.getLeft().getValue() + ' ' +
-              gr.dest.getRelation() + ' (' + gr.dest.getRight().getRole() + ' ' + gr.dest.getRight().getVar().getValue() + ' ' + gr.dest.getRight().getSem().getValue() + ')')
-    if gr.add_time(test_data):
-        print(gr.time.getLeft().getValue() + ' ' +
-              gr.time.getRelation() + ' (' + gr.time.getRight().getRole() + ' ' + gr.time.getRight().getVar().getValue() + ' ' + gr.time.getRight().getSem().getValue() + ')')
-    if gr.add_query(test_data):
-        print(gr.query.getLeft().getValue() + ' ' +
-              gr.query.getRelation() + ' ' + gr.query.getRight().getValue())
+    print('Grammatical Relation analysis...')
+    gr_list = []
+    with codecs.open('output/output_c.txt', 'w', encoding='utf-8') as out_f:
+        for dp in dp_list:
+            out_f.write(f'Query {dp[1]}:\n')
+
+            # Grammatical relation analysis
+            gr = GrammaticalRelation()
+            query = gr.add_query(dp[0])
+            pred = gr.add_pred(dp[0])
+            lsubj = gr.add_lsubj(dp[0])
+            lobj = gr.add_lobj(dp[0])
+            source = gr.add_source(dp[0])
+            dest = gr.add_dest(dp[0])
+            time = gr.add_time(dp[0])
+            gr_list.append(gr)
+            printer = GRPrinter(gr)
+
+            # Write results to a file
+            if query:
+                out_f.write(printer.print_query())
+            if pred:
+                out_f.write(printer.print_pred())
+            if lsubj:
+                out_f.write(printer.print_lsubj())
+            if lobj:
+                out_f.write(printer.print_lobj())
+            if source:
+                out_f.write(printer.print_source())
+            if dest:
+                out_f.write(printer.print_dest())
+            if time:
+                out_f.write(printer.print_time())
+
+            out_f.write('-----------------------------------------------\n')
+        out_f.close()
+
+    print('Analysis done! See results of grammatical relation analysis in the file "output_c.txt".')
 
 
 if __name__ == '__main__':
