@@ -6,6 +6,9 @@ from .utils import dep_relation, semm
 
 class Token(ABC):
     # A token contains a word and its category which defined in grammar (view file "grammar.fcfg")
+    # Parameters:
+    # 1. Word(string): represent word.
+    # 2. Type(string): represent category.
     def __init__(self, word, type):
         super().__init__()
         self.word = word
@@ -17,9 +20,6 @@ class Token(ABC):
     def __repr__(self):
         return self.__str__()
 
-    # def getToken(self):
-    #     return self
-
     def getWord(self):
         return self.word
 
@@ -28,6 +28,10 @@ class Token(ABC):
 
 
 class Relation(ABC):
+    # A relation contains a dependency relation of 2 tokens in a query.
+    # 1. relation(string): represent relation.
+    # 2. token_l(string): represent token 1.
+    # 3. token_r(string): represent token 2.
     def __init__(self, relation, token_l, token_r):
         super().__init__()
         self.relation = relation
@@ -44,6 +48,10 @@ class Relation(ABC):
 
 
 class Pattern(ABC):
+    # A relation contains a grammatical relation of 2 objects.
+    # 1. relation(string): represent relation.
+    # 2. left(string): represent object 1.
+    # 3. right(string): represent object 2.
     def __init__(self, relation, left, right):
         super().__init__()
         self.relation = relation
@@ -60,24 +68,16 @@ class Pattern(ABC):
         return self.right
 
 
-# class LogicalForm(ABC):
-#     def __init__(self, role, var, sem):
-#         super().__init__()
-#         self.role = role
-#         self.var = var
-#         self.sem = sem
-
-#     def getRole(self):
-#         return self.role
-
-#     def getVar(self):
-#         return self.var
-
-#     def getSem(self):
-#         return self.sem
-
-
 class GrammaticalRelation(ABC):
+    # GrammaticalRelation contains some manipulation on list of dependency relation, includes:
+    # 1. add_query: get the question of the query, includes some relations: WH-TRAIN, WH-TIME and YN.
+    # 2. add_pred: get the PRED relation.
+    # 3. add_nsubj: get the NSUBJ relation.
+    # 4. add_lobj: get the IOBJ relation.
+    # 5. add_source: get the FROM-LOC relation.
+    # 6. add_dest: get the TO-LOC relation.
+    # 7. add_time: get the AT-TIME relation.
+
     def __init__(self):
         super().__init__()
         self.pred = None
@@ -207,16 +207,13 @@ class GrammaticalRelation(ABC):
             'AT-TIME', self.pred.getLeft(), sem[0])
         return True
 
-    def get(self):
-        return self
-
 
 class Parser(ABC):
     # Parser contains some manipulation on input text, includes:
     # 1. tokenization: split a text into list of tokens.
     # 2. parse_tree: build a simple parse tree.
     # 3. dependency_relation: analysis dependency parsing of a query sentence in the database. This includes some more smaller manipulation like: leftArc, rightArc, shift and reduce.
-
+    # 4. grammatical_relation: analysis grammatical relation based on dependency relations that have been analysized.
     def __init__(self, grammar):
         # Parameter:
         # 1. grammar(Grammar): defined in file "grammar.fcfg", which contains the grammar of the system.
@@ -272,5 +269,11 @@ class Parser(ABC):
 
     def grammatical_relation(self, dp_list):
         gr = GrammaticalRelation()
-        gr.add_pred(dp_list)
-        return gr
+        query = gr.add_query(dp_list)
+        pred = gr.add_pred(dp_list)
+        lsubj = gr.add_lsubj(dp_list)
+        lobj = gr.add_lobj(dp_list)
+        source = gr.add_source(dp_list)
+        dest = gr.add_dest(dp_list)
+        time = gr.add_time(dp_list)
+        return gr, query, pred, lsubj, lobj, source, dest, time

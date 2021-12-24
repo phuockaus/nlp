@@ -3,10 +3,12 @@ from abc import ABC
 
 
 def read_file(folder):
+    # Read input files in a folder
     return [(f'{folder}{index}.txt', index) for index in range(1, 7)]
 
 
 def dep_relation(t1, t2):
+    # Define dependency relation and its malnipulation.
     relation = {
         # shift
         ('ROOT', 'TRAIN-N'): ('shift', None),
@@ -61,6 +63,7 @@ def dep_relation(t1, t2):
 
 
 def semm(type, city=None, time=None, train=None):
+    # Define sematic of each category
     variant_city = {
         'Huế': (LogicalForm('CITY-NAME', VAR('h1'), OBJECT('HUE')), None),
         'Đà Nẵng': (LogicalForm('CITY-NAME', VAR('d1'), OBJECT('DANANG')), None),
@@ -140,6 +143,7 @@ def semm(type, city=None, time=None, train=None):
 
 
 class LogicalForm(ABC):
+    # Define the Logical Form of an object.
     def __init__(self, role, var, sem):
         super().__init__()
         self.role = role
@@ -157,6 +161,7 @@ class LogicalForm(ABC):
 
 
 class GRPrinter(ABC):
+    # GRPrinter helps format the output of grammatical relations.
     def __init__(self, gr):
         super().__init__()
         self.gr = gr

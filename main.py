@@ -1,5 +1,5 @@
-from models.utils import LogicalForm, GRPrinter, read_file
-from models.grammar import GrammaticalRelation, Parser
+from models.utils import GRPrinter, read_file
+from models.grammar import Parser
 import codecs
 
 
@@ -43,14 +43,8 @@ def main():
             out_f.write(f'Query {dp[1]}:\n')
 
             # Grammatical relation analysis
-            gr = GrammaticalRelation()
-            query = gr.add_query(dp[0])
-            pred = gr.add_pred(dp[0])
-            lsubj = gr.add_lsubj(dp[0])
-            lobj = gr.add_lobj(dp[0])
-            source = gr.add_source(dp[0])
-            dest = gr.add_dest(dp[0])
-            time = gr.add_time(dp[0])
+            gr, query, pred, lsubj, lobj, source, dest, time = nlp_parser.grammatical_relation(
+                dp[0])
             gr_list.append(gr)
             printer = GRPrinter(gr)
 
