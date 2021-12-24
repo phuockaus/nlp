@@ -6,7 +6,7 @@ Query 1:
 (a1 AT-TIME (TIME t3 19:00HR))
 -----------------------------------------------
 Query 2:
-(t2 WH-TIME TIME)
+(t2 WH-RUNTIME TIME)
 (i1 PRED IS)
 (i1 LSUBJ t2)
 (r1 PRED RUN)

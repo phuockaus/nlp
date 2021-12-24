@@ -1,7 +1,7 @@
 from abc import ABC
 from nltk import parse
 
-from .utils import dep_relation, semm
+from .utils import dep_relation, semm, logical_form_mapping
 
 
 class Token(ABC):
@@ -101,7 +101,7 @@ class GrammaticalRelation(ABC):
                 self.query.append(Pattern('WH-TRAIN', sem[0], sem[1]))
             elif wh.getToken('r').getType() == 'TIME-QUERY':
                 sem = semm(wh.getToken('r').getType())
-                self.query.append(Pattern('WH-TIME', sem[0], sem[1]))
+                self.query.append(Pattern('WH-RUNTIME', sem[0], sem[1]))
             else:
                 return False
         else:
@@ -208,6 +208,58 @@ class GrammaticalRelation(ABC):
         return True
 
 
+class LogicalForm(ABC):
+    def __init__(self):
+        super().__init__()
+        self.predicate = []
+        self.pred = None
+        self.agent = None
+        self.subpred = None
+        self.theme = None
+        self.source = None
+        self.dest = None
+        self.time = None
+
+    def add_predicate(self, gr):
+        self.predicate = [logical_form_mapping(
+            q) for q in gr.query] if gr.query else None
+        return True if self.predicate else False
+
+    def add_pred(self, gr):
+        self.pred = logical_form_mapping(gr.pred) if gr.pred else None
+        return True if self.pred else False
+
+    def add_subpred(self, gr):
+        if gr.lobj:
+            self.subpred = LogicalForm()
+            self.subpred.add_pred(gr.lobj) if gr.lobj else None
+            self.subpred.add_agent(gr.lobj) if gr.lobj else None
+            self.subpred.add_source(gr.lobj) if gr.lobj else None
+            self.subpred.add_dest(gr.lobj) if gr.lobj else None
+            return True
+        return False
+
+    def add_theme(self, gr):
+        self.theme = logical_form_mapping(gr.nmod) if gr.nmod else None
+        return True if self.theme else False
+
+    def add_agent(self, gr):
+        self.agent = logical_form_mapping(gr.lsubj) if gr.lsubj else None
+        return True if self.agent else False
+
+    def add_source(self, gr):
+        self.source = logical_form_mapping(gr.source) if gr.source else None
+        return True if self.source else False
+
+    def add_dest(self, gr):
+        self.dest = logical_form_mapping(gr.dest) if gr.dest else None
+        return True if self.dest else False
+
+    def add_time(self, gr):
+        self.time = logical_form_mapping(gr.time) if gr.time else None
+        return True if self.time else False
+
+
 class Parser(ABC):
     # Parser contains some manipulation on input text, includes:
     # 1. tokenization: split a text into list of tokens.
@@ -277,3 +329,15 @@ class Parser(ABC):
         dest = gr.add_dest(dp_list)
         time = gr.add_time(dp_list)
         return gr, query, pred, lsubj, lobj, source, dest, time
+
+    def logical_form(self, gr):
+        lf = LogicalForm()
+        predicate = lf.add_predicate(gr)
+        pred = lf.add_pred(gr)
+        subpred = lf.add_subpred(gr)
+        agent = lf.add_agent(gr)
+        theme = lf.add_theme(gr)
+        source = lf.add_source(gr)
+        dest = lf.add_dest(gr)
+        time = lf.add_time(gr)
+        return lf

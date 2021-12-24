@@ -1,0 +1,18 @@
+Query 1:
+(WH-TRAIN t1: (ARRIVE a1)(AGENT a1 t1)(TO-LOC a1 (CITY-NAME h1 HUE))(AT-TIME a1 (TIME t3 19:00HR)))
+-----------------------------------------------
+Query 2:
+(WH-RUNTIME t2: (IS i1)(AGENT i1 t2)((RUN r1)(AGENT r1 (TRAIN-NAME b1 B3))(FROM-LOC r1 (CITY-NAME d1 DANANG))(TO-LOC r1 (CITY-NAME h2 HCM)))(THEME i1 r1))
+-----------------------------------------------
+Query 3:
+(WH-TRAIN t1: (ARRIVE a1)(AGENT a1 t1)(TO-LOC a1 (CITY-NAME h2 HCM)))
+-----------------------------------------------
+Query 4:
+(WH-TRAIN t1:  (WH-TIME t2: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME n1 NHATRANG))(AT-TIME r1 t2)))
+-----------------------------------------------
+Query 5:
+(WH-TRAIN t1: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME h2 HCM))(TO-LOC r1 (CITY-NAME h3 HANOI)))
+-----------------------------------------------
+Query 6:
+(YN :(RUN r1)(AGENT r1 (TRAIN-NAME b1 B5))(FROM-LOC r1 (CITY-NAME d1 DANANG)))
+-----------------------------------------------

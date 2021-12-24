@@ -142,6 +142,30 @@ def semm(type, city=None, time=None, train=None):
     return sematic.get(type, None)
 
 
+def logical_form_mapping(gr):
+    if gr:
+        left = gr.getLeft()
+        right = gr.getRight()
+        mapping = {
+            (VAR, 'PRED', PRED): UnaryLogicalForm(left, right),
+            (VAR, 'LSUBJ', OBJECT): BinaryLogicalForm(left, right, 'AGENT'),
+            (VAR, 'LSUBJ', VAR): BinaryLogicalForm(left, right, 'AGENT'),
+            (VAR, 'LSUBJ', ObjectForm): BinaryLogicalForm(left, right, 'AGENT'),
+            (VAR, 'TO-LOC', ObjectForm): BinaryLogicalForm(left, right, 'TO-LOC'),
+            (VAR, 'FROM-LOC', ObjectForm): BinaryLogicalForm(left, right, 'FROM-LOC'),
+            (VAR, 'AT-TIME', ObjectForm): BinaryLogicalForm(left, right, 'AT-TIME'),
+            (VAR, 'AT-TIME', VAR): BinaryLogicalForm(left, right, 'AT-TIME'),
+            (VAR, 'WH-TRAIN', OBJECT): Predicate(left, 'WH-TRAIN'),
+            (VAR, 'WH-TIME', OBJECT): Predicate(left, 'WH-TIME'),
+            (VAR, 'WH-RUNTIME', OBJECT): Predicate(left, 'WH-RUNTIME'),
+            (VAR, 'IOBJ', VAR): BinaryLogicalForm(left, right, 'THEME'),
+            (type(None), 'YN', type(None)): Predicate(None, 'YN')
+        }
+
+        return mapping.get((type(left), gr.getRelation(), type(right)), None)
+    return None
+
+
 class ObjectForm(ABC):
     # Define the Object Form of an object.
     def __init__(self, category, var, sem):
@@ -216,3 +240,100 @@ class GRPrinter(ABC):
     @ staticmethod
     def __printYN(gr):
         return f'({gr.getRelation()})\n'
+
+
+class LFPrinter(ABC):
+    def __init__(self, lf):
+        super().__init__()
+        self.lf = lf
+
+    def print(self):
+        content = []
+        sub_printer = LFPrinter(self.lf.subpred) if self.lf.subpred else None
+        sub_content = f'({sub_printer.print()})' if sub_printer else ''
+
+        content.append(self.__printUnary(self.lf.pred)
+                       ) if self.lf.pred else None
+        content.append(self.__printBinary(self.lf.agent)
+                       ) if self.lf.agent else None
+        content.append(sub_content)
+        content.append(self.__printBinary(self.lf.theme)
+                       ) if self.lf.theme else None
+        content.append(self.__printBinary(self.lf.source)
+                       ) if self.lf.source else None
+        content.append(self.__printBinary(self.lf.dest)
+                       ) if self.lf.dest else None
+        content.append(self.__printBinary(self.lf.time)
+                       ) if self.lf.time else None
+
+        predicate = [self.__printPredicate(
+            lf) for lf in self.lf.predicate] if self.lf.predicate else []
+
+        close_bracket = [')' for _ in range(
+            len(predicate))]
+        return ' '.join(predicate) + ''.join(content) + ''.join(close_bracket)
+
+    @ staticmethod
+    def __printOF(object):
+        category = object.getCategory()
+        var = object.getVar().getValue()
+        sem = object.getSem().getValue()
+        return f'({category} {var} {sem})'
+
+    @ staticmethod
+    def __printUnary(lf):
+        var = lf.getVar().getValue()
+        sem = lf.getSem().getValue()
+        return f'({sem} {var})'
+
+    @ staticmethod
+    def __printPredicate(lf):
+        if (lf.getVar() == None):
+            return '(YN :'
+        var = lf.getVar().getValue()
+        sem = lf.getSem()
+        return f'({sem} {var}: '
+
+    @ classmethod
+    def __printBinary(cls, lf):
+        var = lf.getVar().getValue()
+        sem = lf.getSem().getValue() if type(
+            lf.getSem()) != ObjectForm else cls.__printOF(lf.getSem())
+        role = lf.getRole()
+        return f'({role} {var} {sem})'
+
+    @ staticmethod
+    def __printYN(lf):
+        return f'{lf.getRole()}: '
+
+
+class LogicalForm(ABC):
+    def __init__(self, var, sem):
+        super().__init__()
+        self.var = var
+        self.sem = sem
+
+    def getVar(self):
+        return self.var
+
+    def getSem(self):
+        return self.sem
+
+
+class UnaryLogicalForm(LogicalForm):
+    def __init__(self, var, sem):
+        super().__init__(var, sem)
+
+
+class BinaryLogicalForm(LogicalForm):
+    def __init__(self, var, sem, role):
+        super().__init__(var, sem)
+        self.role = role
+
+    def getRole(self):
+        return self.role
+
+
+class Predicate(UnaryLogicalForm):
+    def __init__(self, var, sem):
+        super().__init__(var, sem)
