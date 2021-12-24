@@ -23,6 +23,7 @@ Query 3:
 -----------------------------------------------
 Query 4:
 (t1 WH-TRAIN TRAIN)
+(t2 WH-TIME TIME)
 (r1 PRED RUN)
 (r1 LSUBJ t1)
 (r1 FROM-LOC (CITY-NAME n1 NHATRANG))

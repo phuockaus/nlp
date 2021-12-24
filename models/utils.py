@@ -162,11 +162,13 @@ class GRPrinter(ABC):
         self.gr = gr
 
     def print_query(self):
+        ql = []
         for q in self.gr.query:
             if q.getRelation() == 'YN':
-                return self.__printYN(q)
+                ql.append(self.__printYN(q))
             else:
-                return self.__printPattern(q)
+                ql.append(self.__printPattern(q))
+        return ''.join(ql)
 
     def print_pred(self):
         return self.__printPattern(self.gr.pred)
