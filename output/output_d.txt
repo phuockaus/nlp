@@ -8,10 +8,10 @@ Query 3:
 (WH-TRAIN t1: (ARRIVE a1)(AGENT a1 t1)(TO-LOC a1 (CITY-NAME h2 HCM)))
 -----------------------------------------------
 Query 4:
-(WH-TRAIN t1:  (WH-TIME t2: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME n1 NHATRANG))(AT-TIME r1 t2)))
+(WH-TRAIN t1:  (WH-TIME t2: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME n1 NTrang))(AT-TIME r1 t2)))
 -----------------------------------------------
 Query 5:
-(WH-TRAIN t1: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME h2 HCM))(TO-LOC r1 (CITY-NAME h3 HANOI)))
+(WH-TRAIN t1: (RUN r1)(AGENT r1 t1)(FROM-LOC r1 (CITY-NAME h2 HCM))(TO-LOC r1 (CITY-NAME h3 HN)))
 -----------------------------------------------
 Query 6:
 (YN :(RUN r1)(AGENT r1 (TRAIN-NAME b1 B5))(FROM-LOC r1 (CITY-NAME d1 DANANG)))

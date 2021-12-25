@@ -1,4 +1,5 @@
-from models.utils import read_file
+from models.database import Database
+from models.utils import read_file, write_answer
 from models.object import LFPrinter, GRPrinter, PSPrinter
 from models.grammar import NLP
 import codecs
@@ -87,7 +88,7 @@ def main():
         for gr in gr_list:
             out_f.write(f'Query {gr[1]}:\n')
 
-            # Grammatical relation analysis
+            # Translate into Logical Form
             try:
                 lf = nlp_master.logical_form(gr[0])
             except:
@@ -110,7 +111,7 @@ def main():
         for lf in lf_list:
             out_f.write(f'Query {lf[1]}:\n')
 
-            # lfammatical relation analysis
+           # Translate into procedure semantic
             try:
                 ps = nlp_master.procedure_semantic(lf[0])
             except:
@@ -120,11 +121,33 @@ def main():
             ps_list.append((ps, lf[1]))
             for p in ps:
                 printer = PSPrinter(p)
+
                 # Write results to a file
                 out_f.write(printer.print() + '\n')
             out_f.write('-----------------------------------------------\n')
         out_f.close()
     print('Transfering done! See results of grammatical relation analysis in the file "output_e.txt".')
+
+    database = Database('input/database/data.txt').getData()
+
+    print('Writing answers...')
+    with codecs.open('output/output_f.txt', 'w', encoding='utf-8') as out_f:
+        for ps in ps_list:
+            out_f.write(f'Query {ps[1]}:\n')
+
+            # Retrieve answers
+            try:
+                result_list = [nlp_master.retrieve_result(
+                    database, p) for p in ps[0]]
+            except:
+                print(f'Error: Cannot retrieve answers on query {ps[1]}')
+                return
+
+            for result in result_list:
+                out_f.write(write_answer(result) + '\n')
+            out_f.write('-----------------------------------------------\n')
+        out_f.close()
+    print('See results of every query in the file "output_f.txt".')
 
 
 if __name__ == '__main__':

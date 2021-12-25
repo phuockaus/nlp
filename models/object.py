@@ -1,5 +1,7 @@
 from abc import ABC
 
+# This module contains all data structures need for the systems.
+
 
 class ROOT(ABC):
     def __init__(self, value):

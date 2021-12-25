@@ -26,7 +26,7 @@ Query 4:
 (t2 WH-TIME TIME)
 (r1 PRED RUN)
 (r1 LSUBJ t1)
-(r1 FROM-LOC (CITY-NAME n1 NHATRANG))
+(r1 FROM-LOC (CITY-NAME n1 NTrang))
 (r1 AT-TIME t2)
 -----------------------------------------------
 Query 5:
@@ -34,7 +34,7 @@ Query 5:
 (r1 PRED RUN)
 (r1 LSUBJ t1)
 (r1 FROM-LOC (CITY-NAME h2 HCM))
-(r1 TO-LOC (CITY-NAME h3 HANOI))
+(r1 TO-LOC (CITY-NAME h3 HN))
 -----------------------------------------------
 Query 6:
 (YN)

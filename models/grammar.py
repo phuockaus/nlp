@@ -1,4 +1,5 @@
 from abc import ABC
+from typing_extensions import runtime
 from nltk import parse
 
 from .utils import dep_relation, semm, logical_form_mapping, procedure_semantic_translate
@@ -6,7 +7,7 @@ from .object import Procedure, Token, Relation, Pattern
 
 
 class GrammaticalRelationStructure(ABC):
-    # GrammaticalRelationStructure contains some manipulation on list of dependency relation, includes:
+    # GrammaticalRelationStructure contains some manipulations on list of dependency relation, includes:
     # 1. add_query: get the question of the query, includes some relations: WH-TRAIN, WH-TIME and YN.
     # 2. add_pred: get the PRED relation.
     # 3. add_nsubj: get the NSUBJ relation.
@@ -146,6 +147,7 @@ class GrammaticalRelationStructure(ABC):
 
 
 class LogicalFormStructure(ABC):
+    # LogicalFormStructure contains some manipulations on list of logical forms.
     def __init__(self):
         super().__init__()
         self.predicate = []
@@ -198,6 +200,7 @@ class LogicalFormStructure(ABC):
 
 
 class ProcedureSematicStructure(ABC):
+    # ProcedureSematicStructure contains some manipulations on list of procedure semantics.
     def __init__(self):
         super().__init__()
         self.query = None
@@ -208,11 +211,9 @@ class ProcedureSematicStructure(ABC):
 
     def add_query(self, head, var):
         self.query = Procedure(head, var)
-        # return self.query.getVar()
 
     def add_train(self, var):
         self.train = Procedure('TRAIN', [var])
-        # return self.query.getVar()
 
     def add_dtime(self, var_t, var_source, var_time):
         self.dtime = Procedure('DTIME', [var_t, var_source, var_time])
@@ -285,6 +286,7 @@ class NLP(ABC):
         return A
 
     def grammatical_relation(self, dp_list):
+        # Return a GrammaticalRelationStructure object
         gr = GrammaticalRelationStructure()
         query = gr.add_query(dp_list)
         pred = gr.add_pred(dp_list)
@@ -296,6 +298,7 @@ class NLP(ABC):
         return gr, query, pred, lsubj, lobj, source, dest, time
 
     def logical_form(self, gr):
+        # Return a LogicalFormStructure object
         lf = LogicalFormStructure()
         lf.add_predicate(gr)
         lf.add_pred(gr)
@@ -308,6 +311,7 @@ class NLP(ABC):
         return lf
 
     def procedure_semantic(self, lf):
+        # Return a ProcedureSematicStructure object
         ps_list = []
         for predicate in lf.predicate:
             ps = ProcedureSematicStructure()
@@ -336,3 +340,65 @@ class NLP(ABC):
             ps.add_rtime(train_var, source_var, dest_var, '?rt')
             ps_list.append(ps)
         return ps_list
+
+    def retrieve_result(self, database, ps):
+        # Return answers to a query with a given database
+        if ps.query.head == 'PRINT-ALL':
+            if ps.query.var == '?t':
+                # ask for train
+                train_list = database['train_list']
+                candidate_list = [dtime[0] for dtime in database['dtime_list'] if (
+                    ps.dtime.var[1] == '?source' or ps.dtime.var[1] == dtime[1]) and (ps.dtime.var[2] == '?dt' or ps.dtime.var[2] == dtime[2])]
+                train_list = list(
+                    filter(lambda train: train in train_list, candidate_list))
+
+                candidate_list = [atime[0] for atime in database['atime_list'] if (
+                    ps.atime.var[1] == '?dest' or ps.atime.var[1] == atime[1]) and (ps.atime.var[2] == '?at' or ps.atime.var[2] == atime[2])]
+                train_list = list(
+                    filter(lambda train: train in train_list, candidate_list))
+
+                candidate_list = [rtime[0] for rtime in database['runtime_list'] if (
+                    ps.rtime.var[1] == '?source' or ps.rtime.var[1] == rtime[1]) and (ps.rtime.var[2] == '?dest' or ps.rtime.var[2] == rtime[2]) and (ps.rtime.var[3] == '?rt' or ps.rtime.var[3] == rtime[3])]
+                train_list = list(
+                    filter(lambda train: train in train_list, candidate_list))
+
+                return train_list
+            if ps.query.var == '?rt':
+                # ask for runtime
+                runtime_list = [rtime[3] for rtime in database['runtime_list']]
+
+                candidate_list = [rtime[3] for rtime in database['runtime_list'] if (ps.rtime.var[0] == '?t' or ps.rtime.var[0] == rtime[0]) and (
+                    ps.rtime.var[1] == '?source' or ps.rtime.var[1] == rtime[1]) and (ps.rtime.var[2] == '?dest' or ps.rtime.var[2] == rtime[2])]
+
+                return list(filter(lambda rtime: rtime in runtime_list, candidate_list))
+
+            if ps.query.var == '?dt':
+                dtime_list = [dtime[2] for dtime in database['dtime_list']]
+
+                candidate_list = [dtime[2] for dtime in database['dtime_list'] if (
+                    ps.dtime.var[1] == '?source' or ps.dtime.var[1] == dtime[1]) and (ps.dtime.var[2] == '?dt' or ps.dtime.var[2] == dtime[2])]
+
+                return list(filter(lambda dtime: dtime in dtime_list, candidate_list))
+
+            return []
+
+        if ps.query.head == 'CHECK-ALL-TRUE':
+            train_list = database['train_list']
+            candidate_list = [dtime[0] for dtime in database['dtime_list'] if (
+                ps.dtime.var[1] == '?source' or ps.dtime.var[1] == dtime[1]) and (ps.dtime.var[2] == '?dt' or ps.dtime.var[2] == dtime[2])]
+            train_list = list(
+                filter(lambda train: train in train_list, candidate_list))
+
+            candidate_list = [atime[0] for atime in database['atime_list'] if (
+                ps.atime.var[1] == '?dest' or ps.atime.var[1] == atime[1]) and (ps.atime.var[2] == '?at' or ps.atime.var[2] == atime[2])]
+            train_list = list(
+                filter(lambda train: train in train_list, candidate_list))
+
+            candidate_list = [rtime[0] for rtime in database['runtime_list'] if (
+                ps.rtime.var[1] == '?source' or ps.rtime.var[1] == rtime[1]) and (ps.rtime.var[2] == '?dest' or ps.rtime.var[2] == rtime[2]) and (ps.rtime.var[3] == '?rt' or ps.rtime.var[3] == rtime[3])]
+            train_list = list(
+                filter(lambda train: train in train_list, candidate_list))
+
+            return ['Có'] if ps.train.var[0] in train_list else ['Không']
+
+        return []

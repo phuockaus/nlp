@@ -3,6 +3,9 @@ from functools import reduce
 
 
 class Database(ABC):
+    # Database contain some methods to read database from an .txt file.
+    # Parameters:
+    # 1. file: path to the database file
     def __init__(self, file):
         super().__init__()
         f = open(file)

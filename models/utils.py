@@ -1,5 +1,4 @@
-from .object import VAR, PRED, OBJECT, ObjectForm, UnaryLogicalForm, BinaryLogicalForm, Predicate, Procedure
-from abc import ABC
+from .object import VAR, PRED, OBJECT, ObjectForm, UnaryLogicalForm, BinaryLogicalForm, Predicate
 
 
 def read_file(folder):
@@ -68,8 +67,8 @@ def semm(type, city=None, time=None, train=None):
         'Huế': (ObjectForm('CITY-NAME', VAR('h1'), OBJECT('HUE')), None),
         'Đà Nẵng': (ObjectForm('CITY-NAME', VAR('d1'), OBJECT('DANANG')), None),
         'Hồ Chí Minh': (ObjectForm('CITY-NAME', VAR('h2'), OBJECT('HCM')), None),
-        'Hà Nội': (ObjectForm('CITY-NAME', VAR('h3'), OBJECT('HANOI')), None),
-        'Nha Trang': (ObjectForm('CITY-NAME', VAR('n1'), OBJECT('NHATRANG')), None)
+        'Hà Nội': (ObjectForm('CITY-NAME', VAR('h3'), OBJECT('HN')), None),
+        'Nha Trang': (ObjectForm('CITY-NAME', VAR('n1'), OBJECT('NTrang')), None)
     }
     variant_time = {
         '0:00HR': (ObjectForm('TIME', VAR('t3'), OBJECT('0:00HR')), None),
@@ -192,3 +191,7 @@ def procedure_semantic_translate(lf, translator='var'):
 
     return (translator_var.get(sem, None) if translator == 'var' else translator_head.get(sem, None)) if type(lf) == Predicate else (
         translator_var.get(role, None) if translator == 'var' else translator_head.get(role, None))
+
+
+def write_answer(result_list):
+    return ','.join(result_list) if len(result_list) != 0 else 'Không tìm thấy kết quả!'
