@@ -64,5 +64,5 @@ Với các câu truy vấn được lưu trong đường dẫn `input/queries/`,
 Để chạy chương trình, ta chỉ cần chạy lệnh sau ở terminal:
 
 ```sh
-$python3 main.py
+$python main.py
 ```
