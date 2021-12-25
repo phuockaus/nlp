@@ -1,0 +1,19 @@
+Query 1:
+(PRINT-ALL ?t: (TRAIN ?t)(DTIME ?t ?source ?dt)(ATIME ?t HUE 19:00HR)(RUN-TIME ?t ?source HUE ?rt))
+-----------------------------------------------
+Query 2:
+(PRINT-ALL ?rt: (TRAIN B3)(DTIME B3 DANANG ?dt)(ATIME B3 HCM ?at)(RUN-TIME B3 DANANG HCM ?rt))
+-----------------------------------------------
+Query 3:
+(PRINT-ALL ?t: (TRAIN ?t)(DTIME ?t ?source ?dt)(ATIME ?t HCM ?at)(RUN-TIME ?t ?source HCM ?rt))
+-----------------------------------------------
+Query 4:
+(PRINT-ALL ?t: (TRAIN ?t)(DTIME ?t NHATRANG ?dt)(ATIME ?t ?dest ?at)(RUN-TIME ?t NHATRANG ?dest ?rt))
+(PRINT-ALL ?dt: (TRAIN ?t)(DTIME ?t NHATRANG ?dt)(ATIME ?t ?dest ?at)(RUN-TIME ?t NHATRANG ?dest ?rt))
+-----------------------------------------------
+Query 5:
+(PRINT-ALL ?t: (TRAIN ?t)(DTIME ?t HCM ?dt)(ATIME ?t HANOI ?at)(RUN-TIME ?t HCM HANOI ?rt))
+-----------------------------------------------
+Query 6:
+(CHECK-ALL-TRUE : (TRAIN B5)(DTIME B5 DANANG ?dt)(ATIME B5 ?dest ?at)(RUN-TIME B5 DANANG ?dest ?rt))
+-----------------------------------------------

@@ -273,3 +273,37 @@ class LFPrinter(ABC):
     @ staticmethod
     def __printYN(lf):
         return f'{lf.getRole()}: '
+
+
+class PSPrinter(ABC):
+    def __init__(self, ps):
+        super().__init__()
+        self.ps = ps
+
+    def print(self):
+        content = []
+
+        content.append(self.__printProcedure(self.ps.train)
+                       ) if self.ps.train else None
+        content.append(self.__printProcedure(self.ps.dtime)
+                       ) if self.ps.dtime else None
+        content.append(self.__printProcedure(self.ps.atime)
+                       ) if self.ps.atime else None
+        content.append(self.__printProcedure(self.ps.rtime)
+                       ) if self.ps.rtime else None
+
+        query = self.__printPredicate(self.ps.query) if self.ps.query else None
+
+        return '(' + query + ' ' + ''.join(content) + ')'
+
+    @ staticmethod
+    def __printProcedure(procedure):
+        head = procedure.getHead()
+        var = ' '.join(procedure.getVar())
+        return f'({head} {var})'
+
+    @ staticmethod
+    def __printPredicate(procedure):
+        head = procedure.getHead()
+        var = procedure.getVar()
+        return f'{head} {var}:'

@@ -1,5 +1,5 @@
 from models.utils import read_file
-from models.object import LFPrinter, GRPrinter
+from models.object import LFPrinter, GRPrinter, PSPrinter
 from models.grammar import NLP
 import codecs
 
@@ -62,7 +62,7 @@ def main():
                     dp[0])
             except:
                 print(
-                    f'Error: Cannot grammatical relation analysis on query{dp[1]}')
+                    f'Error: Cannot grammatical relation analysis on query {dp[1]}')
                 return
             gr_list.append((gr, dp[1]))
             printer = GRPrinter(gr)
@@ -92,7 +92,7 @@ def main():
                 lf = nlp_master.logical_form(gr[0])
             except:
                 print(
-                    f'Error: Cannot grammatical relation analysis on query{gr[1]}')
+                    f'Error: Cannot transfer grammatical relation to logical form on query {gr[1]}')
                 return
             lf_list.append((lf, gr[1]))
             printer = LFPrinter(lf)
@@ -102,6 +102,29 @@ def main():
             out_f.write('\n-----------------------------------------------\n')
         out_f.close()
     print('Transfering done! See results of grammatical relation analysis in the file "output_d.txt".')
+
+    ps_list = []
+
+    print('Transfering into Procedure Semantics...')
+    with codecs.open('output/output_e.txt', 'w', encoding='utf-8') as out_f:
+        for lf in lf_list:
+            out_f.write(f'Query {lf[1]}:\n')
+
+            # lfammatical relation analysis
+            try:
+                ps = nlp_master.procedure_semantic(lf[0])
+            except:
+                print(
+                    f'Error: Cannot transfer logical form to procedure semantics on query {lf[1]}')
+                return
+            ps_list.append((ps, lf[1]))
+            for p in ps:
+                printer = PSPrinter(p)
+                # Write results to a file
+                out_f.write(printer.print() + '\n')
+            out_f.write('-----------------------------------------------\n')
+        out_f.close()
+    print('Transfering done! See results of grammatical relation analysis in the file "output_e.txt".')
 
 
 if __name__ == '__main__':

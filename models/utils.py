@@ -166,7 +166,29 @@ def logical_form_mapping(gr):
     return None
 
 
-def procedure_semantic_translate(lf):
-    translator = {
-        'WH-TRAIN': 'PRINT-ALL'
+def procedure_semantic_translate(lf, translator='var'):
+    if not lf:
+        return None
+    sem = lf.getSem()
+    var = lf.getVar()
+    role = lf.getRole() if type(lf) == BinaryLogicalForm else None
+    translator_var = {
+        'WH-TRAIN': f'?t',
+        'WH-RUNTIME': f'?rt',
+        'WH-TIME': f'?dt',
+        'YN': ''
+    } if type(lf) == Predicate else {
+        'FROM-LOC': f'?source' if type(sem) != ObjectForm else f'{sem.getSem().getValue()}',
+        'TO-LOC': f'?dest' if type(sem) != ObjectForm else f'{sem.getSem().getValue()}',
+        'AT-TIME': f'?at' if type(sem) != ObjectForm else f'{sem.getSem().getValue()}',
+        'AGENT': f'?{sem.getValue()[0]}' if type(sem) != ObjectForm else f'{sem.getSem().getValue()}'
     }
+    translator_head = {
+        'WH-TRAIN': 'PRINT-ALL',
+        'WH-RUNTIME': 'PRINT-ALL',
+        'WH-TIME': 'PRINT-ALL',
+        'YN': 'CHECK-ALL-TRUE',
+    }
+
+    return (translator_var.get(sem, None) if translator == 'var' else translator_head.get(sem, None)) if type(lf) == Predicate else (
+        translator_var.get(role, None) if translator == 'var' else translator_head.get(role, None))

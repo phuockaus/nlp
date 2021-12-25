@@ -1,8 +1,8 @@
 from abc import ABC
 from nltk import parse
 
-from .utils import dep_relation, semm, logical_form_mapping
-from .object import Token, Relation, Pattern
+from .utils import dep_relation, semm, logical_form_mapping, procedure_semantic_translate
+from .object import Procedure, Token, Relation, Pattern
 
 
 class GrammaticalRelationStructure(ABC):
@@ -197,6 +197,34 @@ class LogicalFormStructure(ABC):
         return True if self.time else False
 
 
+class ProcedureSematicStructure(ABC):
+    def __init__(self):
+        super().__init__()
+        self.query = None
+        self.train = None
+        self.dtime = None
+        self.atime = None
+        self.rtime = None
+
+    def add_query(self, head, var):
+        self.query = Procedure(head, var)
+        # return self.query.getVar()
+
+    def add_train(self, var):
+        self.train = Procedure('TRAIN', [var])
+        # return self.query.getVar()
+
+    def add_dtime(self, var_t, var_source, var_time):
+        self.dtime = Procedure('DTIME', [var_t, var_source, var_time])
+
+    def add_atime(self, var_t, var_dest, var_time):
+        self.atime = Procedure('ATIME', [var_t, var_dest, var_time])
+
+    def add_rtime(self, var_t, var_source, var_dest, var_time):
+        self.rtime = Procedure(
+            'RUN-TIME', [var_t, var_source, var_dest, var_time])
+
+
 class NLP(ABC):
     # NLP contains some manipulation on input text, includes:
     # 1. tokenization: split a text into list of tokens.
@@ -280,4 +308,31 @@ class NLP(ABC):
         return lf
 
     def procedure_semantic(self, lf):
-        pass
+        ps_list = []
+        for predicate in lf.predicate:
+            ps = ProcedureSematicStructure()
+            if not lf.subpred:
+                train_var = procedure_semantic_translate(lf.agent, 'var')
+                source_var = procedure_semantic_translate(
+                    lf.source, 'var') if procedure_semantic_translate(lf.source, 'var') else '?source'
+                dest_var = procedure_semantic_translate(
+                    lf.dest, 'var') if procedure_semantic_translate(lf.dest, 'var') else '?dest'
+                time_var = procedure_semantic_translate(
+                    lf.time, 'var') if procedure_semantic_translate(lf.time, 'var') else '?at'
+            else:
+                train_var = procedure_semantic_translate(
+                    lf.subpred.agent, 'var')
+                source_var = procedure_semantic_translate(
+                    lf.subpred.source, 'var') if procedure_semantic_translate(lf.subpred.source, 'var') else '?source'
+                dest_var = procedure_semantic_translate(
+                    lf.subpred.dest, 'var') if procedure_semantic_translate(lf.subpred.dest, 'var') else '?dest'
+                time_var = procedure_semantic_translate(
+                    lf.subpred.time, 'var') if procedure_semantic_translate(lf.subpred.time, 'var') else '?at'
+            ps.add_query(procedure_semantic_translate(predicate, 'head'),
+                         procedure_semantic_translate(predicate, 'var'))
+            ps.add_train(train_var)
+            ps.add_dtime(train_var, source_var, '?dt')
+            ps.add_atime(train_var, dest_var, time_var)
+            ps.add_rtime(train_var, source_var, dest_var, '?rt')
+            ps_list.append(ps)
+        return ps_list
