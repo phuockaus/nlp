@@ -2,74 +2,11 @@ from abc import ABC
 from nltk import parse
 
 from .utils import dep_relation, semm, logical_form_mapping
+from .object import Token, Relation, Pattern
 
 
-class Token(ABC):
-    # A token contains a word and its category which defined in grammar (view file "grammar.fcfg")
-    # Parameters:
-    # 1. Word(string): represent word.
-    # 2. Type(string): represent category.
-    def __init__(self, word, type):
-        super().__init__()
-        self.word = word
-        self.type = type
-
-    def __str__(self):
-        return f'{self.word}({self.type})'
-
-    def __repr__(self):
-        return self.__str__()
-
-    def getWord(self):
-        return self.word
-
-    def getType(self):
-        return self.type
-
-
-class Relation(ABC):
-    # A relation contains a dependency relation of 2 tokens in a query.
-    # 1. relation(string): represent relation.
-    # 2. token_l(string): represent token 1.
-    # 3. token_r(string): represent token 2.
-    def __init__(self, relation, token_l, token_r):
-        super().__init__()
-        self.relation = relation
-        self.token_l = token_l
-        self.token_r = token_r
-
-    def getRelation(self):
-        return self.relation
-
-    def getToken(self, pos='l'):
-        if pos == 'l':
-            return self.token_l
-        return self.token_r
-
-
-class Pattern(ABC):
-    # A relation contains a grammatical relation of 2 objects.
-    # 1. relation(string): represent relation.
-    # 2. left(string): represent object 1.
-    # 3. right(string): represent object 2.
-    def __init__(self, relation, left, right):
-        super().__init__()
-        self.relation = relation
-        self.left = left
-        self.right = right
-
-    def getRelation(self):
-        return self.relation
-
-    def getLeft(self):
-        return self.left
-
-    def getRight(self):
-        return self.right
-
-
-class GrammaticalRelation(ABC):
-    # GrammaticalRelation contains some manipulation on list of dependency relation, includes:
+class GrammaticalRelationStructure(ABC):
+    # GrammaticalRelationStructure contains some manipulation on list of dependency relation, includes:
     # 1. add_query: get the question of the query, includes some relations: WH-TRAIN, WH-TIME and YN.
     # 2. add_pred: get the PRED relation.
     # 3. add_nsubj: get the NSUBJ relation.
@@ -137,7 +74,7 @@ class GrammaticalRelation(ABC):
             return False
         nmod = nmod_list[0]
         sem = semm(nmod.getToken('r').getType())
-        self.lobj = GrammaticalRelation()
+        self.lobj = GrammaticalRelationStructure()
         new_dp_list = list(filter(lambda relation: relation.getRelation(
         ) != 'root' and relation.getRelation() != 'nmod', dp_list))
         new_dp_list.append(
@@ -208,7 +145,7 @@ class GrammaticalRelation(ABC):
         return True
 
 
-class LogicalForm(ABC):
+class LogicalFormStructure(ABC):
     def __init__(self):
         super().__init__()
         self.predicate = []
@@ -231,7 +168,7 @@ class LogicalForm(ABC):
 
     def add_subpred(self, gr):
         if gr.lobj:
-            self.subpred = LogicalForm()
+            self.subpred = LogicalFormStructure()
             self.subpred.add_pred(gr.lobj) if gr.lobj else None
             self.subpred.add_agent(gr.lobj) if gr.lobj else None
             self.subpred.add_source(gr.lobj) if gr.lobj else None
@@ -260,8 +197,8 @@ class LogicalForm(ABC):
         return True if self.time else False
 
 
-class Parser(ABC):
-    # Parser contains some manipulation on input text, includes:
+class NLP(ABC):
+    # NLP contains some manipulation on input text, includes:
     # 1. tokenization: split a text into list of tokens.
     # 2. parse_tree: build a simple parse tree.
     # 3. dependency_relation: analysis dependency parsing of a query sentence in the database. This includes some more smaller manipulation like: leftArc, rightArc, shift and reduce.
@@ -320,7 +257,7 @@ class Parser(ABC):
         return A
 
     def grammatical_relation(self, dp_list):
-        gr = GrammaticalRelation()
+        gr = GrammaticalRelationStructure()
         query = gr.add_query(dp_list)
         pred = gr.add_pred(dp_list)
         lsubj = gr.add_lsubj(dp_list)
@@ -331,13 +268,16 @@ class Parser(ABC):
         return gr, query, pred, lsubj, lobj, source, dest, time
 
     def logical_form(self, gr):
-        lf = LogicalForm()
-        predicate = lf.add_predicate(gr)
-        pred = lf.add_pred(gr)
-        subpred = lf.add_subpred(gr)
-        agent = lf.add_agent(gr)
-        theme = lf.add_theme(gr)
-        source = lf.add_source(gr)
-        dest = lf.add_dest(gr)
-        time = lf.add_time(gr)
+        lf = LogicalFormStructure()
+        lf.add_predicate(gr)
+        lf.add_pred(gr)
+        lf.add_subpred(gr)
+        lf.add_agent(gr)
+        lf.add_theme(gr)
+        lf.add_source(gr)
+        lf.add_dest(gr)
+        lf.add_time(gr)
         return lf
+
+    def procedure_semantic(self, lf):
+        pass

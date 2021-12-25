@@ -1,5 +1,6 @@
-from models.utils import GRPrinter, LFPrinter, read_file
-from models.grammar import Parser
+from models.utils import read_file
+from models.object import LFPrinter, GRPrinter
+from models.grammar import NLP
 import codecs
 
 
@@ -7,7 +8,7 @@ def main():
     # Loading parser
     try:
         print('Loading grammar...')
-        nlp_parser = Parser('models/grammar.fcfg')
+        nlp_master = NLP('models/grammar.fcfg')
         print('Loading done!')
     except:
         print('Error: Cannot loading parser!')
@@ -30,7 +31,7 @@ def main():
             data = f.read()
             f.close()
         try:
-            dp_list.append((nlp_parser.dependency_relation(data), file[1]))
+            dp_list.append((nlp_master.dependency_relation(data), file[1]))
         except:
             print(f'Error: Cannot dependency parsing on query{file[1]}')
             return
@@ -57,7 +58,7 @@ def main():
 
             # Grammatical relation analysis
             try:
-                gr, query, pred, lsubj, lobj, source, dest, time = nlp_parser.grammatical_relation(
+                gr, query, pred, lsubj, lobj, source, dest, time = nlp_master.grammatical_relation(
                     dp[0])
             except:
                 print(
@@ -88,7 +89,7 @@ def main():
 
             # Grammatical relation analysis
             try:
-                lf = nlp_parser.logical_form(gr[0])
+                lf = nlp_master.logical_form(gr[0])
             except:
                 print(
                     f'Error: Cannot grammatical relation analysis on query{gr[1]}')
@@ -100,7 +101,7 @@ def main():
             out_f.write(printer.print())
             out_f.write('\n-----------------------------------------------\n')
         out_f.close()
-    print('Transfering done!')
+    print('Transfering done! See results of grammatical relation analysis in the file "output_d.txt".')
 
 
 if __name__ == '__main__':
