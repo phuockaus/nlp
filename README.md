@@ -10,21 +10,21 @@ Xây dựng hệ thống hỏi đáp đơn giản về các chuyến tàu hỏ
 ## Cơ sở dữ liệu
 
 (TRAIN B1) (TRAIN B2) (TRAIN B3)\
-(TRAIN B4) (TRAIN B5) (TRAIN B6)\
+(TRAIN B4) (TRAIN B5) (TRAIN B6)
 
 (ATIME B1 HUE 19:00HR)\
 (ATIME B2 HUE 22:30HR)\
 (ATIME B3 HCM 16:00HR)\
 (ATIME B4 NTrang 16:30HR)\
 (ATIME B5 HN 23:30HR)\
-(ATIME B6 DANANG 11:30HR)\
+(ATIME B6 DANANG 11:30HR)
 
 (DTIME B1 HCM 10:00HR)\
 (DTIME B2 HN 14:30HR)\
 (DTIME B3 DANANG 6:00HR)\
 (DTIME B4 DANANG 8:30HR)\
 (DTIME B5 HCM 3:30HR)\
-(DTIME B6 HUE 7:30HR)\
+(DTIME B6 HUE 7:30HR)
 
 (RUN-TIME B1 HCM HUE 9:00HR)\
 (RUN-TIME B2 HN HUE 8:00HR)\
@@ -35,12 +35,12 @@ Xây dựng hệ thống hỏi đáp đơn giản về các chuyến tàu hỏ
 
 ## Câu truy vấn
 
-1. Tàu hỏa nào đến thành phố Huế lúc 19:00HR ?\
-2. Thời gian tàu hỏa B3 chạy từ Đà Nẵng đến TP. Hồ Chí Minh là mấy giờ?\
-3. Tàu hỏa nào đến thành phố Hồ Chí Minh ?\
+1. Tàu hỏa nào đến thành phố Huế lúc 19:00HR ?
+2. Thời gian tàu hỏa B3 chạy từ Đà Nẵng đến TP. Hồ Chí Minh là mấy giờ?
+3. Tàu hỏa nào đến thành phố Hồ Chí Minh
 4. Tàu hỏa nào chạy từ Nha Trang, lúc mấy giờ\
-5. Tàu hỏa nào chạy từ TP.Hồ Chí Minh đến Hà Nội ?\
-6. Tàu hỏa B5 có chạy từ Đà Nẵng không ?\
+5. Tàu hỏa nào chạy từ TP.Hồ Chí Minh đến Hà Nội ?
+6. Tàu hỏa B5 có chạy từ Đà Nẵng không ?
 
 ## Hiện thực
 
@@ -59,7 +59,7 @@ f) Truy xuất dữ liệu để tìm thông tin trả lời cho các câu t
 
 ## Chạy chương trình
 
-Với các câu truy vấn được lưu trong đường dẫn `input/queries/`, chương trình sẽ đọc tất cả các file có trong thư mục và sẽ ghi output cho từng câu truy vấn ở từng giai đoạn phân tích. Yêu cầu về tên của file chứa câu truy vấn: `[digit].txt`.\
+Với các câu truy vấn được lưu trong đường dẫn `input/queries/`, chương trình sẽ đọc tất cả các file có trong thư mục và sẽ ghi output cho từng câu truy vấn ở từng giai đoạn phân tích. Yêu cầu về tên của file chứa câu truy vấn: `[digit].txt`.
 
 Để chạy chương trình, ta chỉ cần chạy lệnh sau ở terminal:
 
