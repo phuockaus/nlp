@@ -36,9 +36,9 @@ Xây dựng hệ thống hỏi đáp đơn giản về các chuyến tàu hỏ
 ## Câu truy vấn
 
 1. Tàu hỏa nào đến thành phố Huế lúc 19:00HR ?
-2. Thời gian tàu hỏa B3 chạy từ Đà Nẵng đến TP. Hồ Chí Minh là mấy giờ?
-3. Tàu hỏa nào đến thành phố Hồ Chí Minh
-4. Tàu hỏa nào chạy từ Nha Trang, lúc mấy giờ\
+2. Thời gian tàu hỏa B3 chạy từ Đà Nẵng đến TP. Hồ Chí Minh là mấy giờ ?
+3. Tàu hỏa nào đến thành phố Hồ Chí Minh ?
+4. Tàu hỏa nào chạy từ Nha Trang, lúc mấy giờ ?
 5. Tàu hỏa nào chạy từ TP.Hồ Chí Minh đến Hà Nội ?
 6. Tàu hỏa B5 có chạy từ Đà Nẵng không ?
 
